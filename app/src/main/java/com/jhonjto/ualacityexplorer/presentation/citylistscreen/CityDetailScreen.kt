@@ -4,13 +4,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +31,7 @@ fun CityDetailScreen(
     navController: NavHostController,
     viewModel: CityViewModel = hiltViewModel()
 ) {
+    val isLoading = viewModel.isLoading
     val city = viewModel.getCityById(cityId)
 
     Scaffold(
@@ -46,32 +46,35 @@ fun CityDetailScreen(
             )
         }
     ) { padding ->
-        city?.let {
-            Column(modifier = Modifier
+        Box(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)) {
+                .padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            when {
+                isLoading -> CircularProgressIndicator()
 
-                Text("Ciudad: ${city.name}", style = MaterialTheme.typography.headlineMedium)
-                Text("País: ${city.country}", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Latitud: ${city.lat}")
-                Text("Longitud: ${city.lon}")
-                Text("ID: ${city.id}")
-
-                Button(
-                    onClick = { navController.navigate("city_map/${city.lat}/${city.lon}") },
-                    modifier = Modifier.padding(top = 16.dp)
+                city != null -> Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
                 ) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Ver en Mapa")
+                    Text("Ciudad: ${city.name}", style = MaterialTheme.typography.headlineMedium)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("País: ${city.country}", style = MaterialTheme.typography.bodyLarge)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Latitud: ${city.lat}")
+                    Text("Longitud: ${city.lon}")
+                    Text("ID: ${city.id}")
                 }
 
-            }
-        } ?: run {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Ciudad no encontrada")
+                else -> {
+                    Text(
+                        text = "Ciudad no encontrada",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }

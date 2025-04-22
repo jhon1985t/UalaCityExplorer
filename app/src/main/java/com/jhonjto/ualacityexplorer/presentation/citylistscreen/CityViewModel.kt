@@ -37,10 +37,14 @@ class CityViewModel @Inject constructor(
     var onlyFavorites by mutableStateOf(false)
         private set
 
+    var isLoading by mutableStateOf(true)
+        private set
+
     init {
         viewModelScope.launch {
             allCities = getCitiesUseCase()
             cityIndex = preprocessCityIndexUseCase.buildIndex(allCities)
+            isLoading = false
             prefs.favoriteIds.collect { ids ->
                 favoriteIds = ids
                 updateFilteredList()
@@ -65,7 +69,9 @@ class CityViewModel @Inject constructor(
     }
 
     fun getCityById(id: Int): City? {
-        return cityIndex.values.flatten().find { it.id == id }
+        return if (!isLoading) {
+            cityIndex.values.flatten().find { it.id == id }
+        } else null
     }
 
     private fun updateFilteredList() {
