@@ -73,6 +73,5 @@ Se utilizó:
 
 1. Clona el repo
 ```bash
-git clone https://github.com/tu-usuario/UalaCityExplorer.git
-
+https://github.com/jhon1985t/UalaCityExplorer
 
